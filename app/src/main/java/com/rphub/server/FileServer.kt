@@ -89,9 +89,7 @@ class FileServer(
                 val inputStream = contentResolver.openInputStream(fileUri)
                 if (inputStream != null) {
                     val mimeType = getMimeType(targetPath)
-                    val bytes = inputStream.readBytes()
-                    inputStream.close()
-                    newFixedLengthResponse(Response.Status.OK, mimeType, bytes)
+                    newFixedLengthResponse(Response.Status.OK, mimeType, inputStream, inputStream.available().toLong())
                 } else {
                     newFixedLengthResponse(
                         Response.Status.NOT_FOUND,
@@ -117,9 +115,7 @@ class FileServer(
                     try {
                         val indexStream = contentResolver.openInputStream(indexUri)
                         if (indexStream != null) {
-                            val bytes = indexStream.readBytes()
-                            indexStream.close()
-                            newFixedLengthResponse(Response.Status.OK, "text/html; charset=utf-8", bytes)
+                            newFixedLengthResponse(Response.Status.OK, "text/html; charset=utf-8", indexStream, indexStream.available().toLong())
                         } else {
                             newFixedLengthResponse(
                                 Response.Status.NOT_FOUND,
