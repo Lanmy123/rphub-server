@@ -25,32 +25,12 @@ jobs:
       - name: 赋予 Gradle 执行权限
         run: chmod +x gradlew
 
-      - name: 生成 Gradle Wrapper（如果项目中没有）
-        run: |
-          if [ ! -f gradlew ]; then
-            gradle wrapper --gradle-version 8.5
-          fi
-
-      - name: 构建 Release APK
-        run: ./gradlew assembleRelease
+      - name: 构建 Debug APK（自动签名，可直接安装）
+        run: ./gradlew assembleDebug
 
       - name: 上传 APK 到 Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: RPHub-Server-APK
-          path: app/build/outputs/apk/release/app-release-unsigned.apk
-          retention-days: 90
-
-      - name: 对 APK 签名（调试签名，可直接安装）
-        run: |
-          # 生成一个调试用的 keystore
-          keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
-          # 签名 APK
-          apksigner sign --ks debug.keystore --ks-pass pass:android --ks-key-alias androiddebugkey --key-pass pass:android app/build/outputs/apk/release/app-release-unsigned.apk
-
-      - name: 上传已签名 APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: RPHub-Server-Signed.apk
-          path: app/build/outputs/apk/release/app-release-unsigned.apk
+          path: app/build/outputs/apk/debug/app-debug.apk
           retention-days: 90
